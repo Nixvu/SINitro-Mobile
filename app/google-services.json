@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1062737580468",
+    "project_id": "sinitro-febriana",
+    "storage_bucket": "sinitro-febriana.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1062737580468:android:426ec9acf8cbcf5df722e1",
+        "android_client_info": {
+          "package_name": "com.febriana.sinitro"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3PLnJpSEUobFpp9g9ndaQgcVlRyH655w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

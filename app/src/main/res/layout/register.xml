@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <!-- Logo -->
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/logo2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/email"
+        android:layout_marginBottom="32dp" />
+
+    <!-- Alamat Email EditText -->
+    <EditText
+        android:id="@+id/email"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:background="@drawable/rounded_edittext"
+        android:drawableStart="@drawable/mail"
+        android:drawablePadding="16dp"
+        android:hint="Alamat Email"
+        android:inputType="textEmailAddress"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
+        app:layout_constraintTop_toBottomOf="@+id/logo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="32dp"
+        app:layout_constraintBottom_toTopOf="@+id/nama_pemilik"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Nama Pemilik EditText -->
+    <EditText
+        android:id="@+id/nama_pemilik"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:background="@drawable/rounded_edittext"
+        android:drawableStart="@drawable/user"
+        android:drawablePadding="16dp"
+        android:hint="Nama Pemilik"
+        android:inputType="textPersonName"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
+        app:layout_constraintTop_toBottomOf="@+id/email"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/no_handphone"
+        android:layout_marginBottom="8dp" />
+
+    <!-- No Handphone EditText -->
+    <EditText
+        android:id="@+id/no_handphone"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:background="@drawable/rounded_edittext"
+        android:drawableStart="@drawable/call"
+        android:drawablePadding="16dp"
+        android:hint="No Handphone"
+        android:inputType="phone"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
+        app:layout_constraintTop_toBottomOf="@+id/nama_pemilik"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/password"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Password EditText -->
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:background="@drawable/rounded_edittext"
+        android:drawableStart="@drawable/lock"
+        android:drawablePadding="16dp"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
+        app:layout_constraintTop_toBottomOf="@+id/no_handphone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/konfirmasi_password"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Konfirmasi Password EditText -->
+    <EditText
+        android:id="@+id/konfirmasi_password"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:background="@drawable/rounded_edittext"
+        android:drawableStart="@drawable/lock"
+        android:drawablePadding="16dp"
+        android:hint="Konfirmasi Password"
+        android:inputType="textPassword"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
+        app:layout_constraintTop_toBottomOf="@+id/password"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/register_button"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Daftar Button -->
+    <Button
+        android:id="@+id/register_button"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:backgroundTint="#2466F5"
+        android:drawablePadding="16dp"
+        android:text="Daftar"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@+id/konfirmasi_password"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
+
+    <!-- Login Button -->
+    <TextView
+        android:id="@+id/login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sudah punya akun? Masuk"
+        android:textColor="#2466F5"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@+id/register_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
