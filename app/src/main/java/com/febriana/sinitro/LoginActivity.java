@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -19,14 +21,16 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;
     private TextView createAccountTextView, forgotPasswordTextView;
     private FirebaseAuth mAuth;
+    private FirebaseFirestore firestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login); // Ganti dengan nama layout Anda jika berbeda
 
-        // Inisialisasi Firebase Auth
+        // Inisialisasi Firebase Auth dan Firestore
         mAuth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
 
         // Menyambungkan komponen UI
         emailEditText = findViewById(R.id.email);
@@ -39,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
             // Jika sudah login, langsung arahkan ke halaman utama
-            navigateToMainActivity();
+            checkUserRole(user.getUid());
         }
 
         // Fungsi tombol login
@@ -82,8 +86,11 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        // Login sukses, arahkan ke halaman utama
-                        navigateToMainActivity();
+                        // Login sukses, cek role pengguna
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            checkUserRole(user.getUid());
+                        }
                     } else {
                         // Jika gagal login
                         Toast.makeText(LoginActivity.this, "Login gagal: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -91,9 +98,42 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    // Fungsi untuk mengarahkan pengguna ke MainActivity setelah login sukses
-    private void navigateToMainActivity() {
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+    // Fungsi untuk mengecek role pengguna dari Firestore
+    private void checkUserRole(String uid) {
+        firestore.collection("users").document(uid)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // Dapatkan role pengguna
+                        String role = documentSnapshot.getString("role");
+
+                        // Arahkan pengguna ke dashboard berdasarkan role
+                        if ("admin".equals(role)) {
+                            navigateToAdminDashboard();
+                        } else if ("petugas".equals(role)) {
+                            navigateToPetugasDashboard();
+                        } else {
+                            Toast.makeText(LoginActivity.this, "Role tidak dikenal!", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(this, "Data pengguna tidak ditemukan!", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Gagal mengambil data pengguna!", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    // Fungsi untuk mengarahkan ke dashboard admin
+    private void navigateToAdminDashboard() {
+        Intent intent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    // Fungsi untuk mengarahkan ke dashboard petugas
+    private void navigateToPetugasDashboard() {
+        Intent intent = new Intent(LoginActivity.this, PetugasDashboardActivity.class);
         startActivity(intent);
         finish();
     }

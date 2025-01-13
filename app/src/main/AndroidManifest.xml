@@ -47,6 +47,8 @@
 
         </activity>
 
+        <activity android:name=".AdminDashboardActivity" />
+
 
     </application>
 
