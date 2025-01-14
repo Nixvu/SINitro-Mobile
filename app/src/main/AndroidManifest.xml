@@ -49,6 +49,9 @@
 
         <activity android:name=".AdminDashboardActivity" />
 
+        <!-- Transaksi Form -->
+        <activity android:name=".TransaksiFormActivity"/>
+
 
     </application>
 

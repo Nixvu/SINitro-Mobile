@@ -1,5 +1,6 @@
 package com.febriana.sinitro;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -7,12 +8,13 @@ import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.Button;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
+import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -21,16 +23,16 @@ public class RegisterActivity extends AppCompatActivity {
     private TextView loginButton;
 
     private FirebaseAuth mAuth;
-    private FirebaseFirestore db;
+    private DatabaseReference mDatabase; // Realtime Database reference
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register);
 
-        // Initialize FirebaseAuth and Firestore
+        // Initialize FirebaseAuth and Realtime Database
         mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         // Find views
         emailEditText = findViewById(R.id.email);
@@ -49,9 +51,12 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        // Login button click listener (optional)
+        // Login button click listener (navigate to login activity)
         loginButton.setOnClickListener(v -> {
             // Navigate to login activity
+            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish(); // Close the RegisterActivity so the user can't navigate back to it
         });
     }
 
@@ -98,43 +103,97 @@ public class RegisterActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         // User registration successful
                         FirebaseUser user = mAuth.getCurrentUser();
-
-                        // Save additional user data to Firestore
+                        Log.d("RegisterActivity", "User registered successfully with UID: " + user.getUid());
+                        // Save additional user data to Realtime Database
                         saveUserData(user.getUid(), name, phone);
 
                     } else {
                         // If registration fails, display a message to the user
+                        Log.d("RegisterActivity", "User registration failed, no user data found.");
                         Toast.makeText(RegisterActivity.this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
     }
 
     private void saveUserData(String userId, String name, String phone) {
-        // Create a map with user data
-        User user = new User(name, phone);
+        // Get current time as timestamp
+        long timestamp = System.currentTimeMillis();
 
-        // Save to Firestore under "users" collection
-        db.collection("users").document(userId)
-                .set(user)
+        // Tentukan role pengguna, misalnya admin atau petugas
+        String role = "admin"; // Atau Anda bisa set berdasarkan input pengguna atau kebutuhan aplikasi
+
+        // Buat objek User dengan data tambahan role dan timestamp
+        User user = new User(name, phone, role, timestamp);
+
+        // Simpan ke Realtime Database pada path "users/{userId}"
+        mDatabase.child("users").child(userId).setValue(user)
                 .addOnSuccessListener(aVoid -> {
-                    // User data saved successfully
+                    // Data pengguna berhasil disimpan
+                    Log.d("RegisterActivity", "User registered successfully");
                     Toast.makeText(RegisterActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
-                    // Navigate to login or main activity
+
+                    // Arahkan ke halaman login setelah berhasil mendaftar
+                    Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish(); // Tutup RegisterActivity agar pengguna tidak dapat kembali ke halaman ini
                 })
                 .addOnFailureListener(e -> {
-                    // Failed to save user data
+                    // Jika gagal menyimpan data
+                    Log.e("RegisterActivity", "Error saving user to Realtime Database", e);
                     Toast.makeText(RegisterActivity.this, "Error saving user data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
-    // User class to hold user data
+
+    // User class to hold user data and role
     public static class User {
         String name;
         String phone;
+        String role;
+        long timestamp;
 
-        public User(String name, String phone) {
+        // Konstruktor kosong untuk Realtime Database
+        public User() {
+        }
+
+        public User(String name, String phone, String role, long timestamp) {
             this.name = name;
             this.phone = phone;
+            this.role = role;
+            this.timestamp = timestamp;
+        }
+
+        // Getter dan Setter
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getPhone() {
+            return phone;
+        }
+
+        public void setPhone(String phone) {
+            this.phone = phone;
+        }
+
+        public String getRole() {
+            return role;
+        }
+
+        public void setRole(String role) {
+            this.role = role;
+        }
+
+        public long getTimestamp() {
+            return timestamp;
+        }
+
+        public void setTimestamp(long timestamp) {
+            this.timestamp = timestamp;
         }
     }
 }
