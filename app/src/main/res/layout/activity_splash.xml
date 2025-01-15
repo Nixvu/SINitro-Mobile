@@ -1,14 +1,54 @@
-<LinearLayout
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1363DF"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:background="#2466F5">
 
+    <!-- Abstract Image Top Left -->
+    <View
+        android:id="@+id/view2"
+        android:layout_width="116dp"
+        android:layout_height="83dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_margin="0dp"
+        android:background="@drawable/art1" />
+
+    <!-- Abstract Image Top Right -->
+    <View
+        android:id="@+id/view3"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="0dp"
+        android:rotation="90"
+        android:background="@drawable/bubble" />
+
+    <!-- LOGO CENTER!! -->
     <ImageView
-        android:id="@+id/logoImageView"
+        android:id="@+id/imageView7"
         android:layout_width="151dp"
-        android:layout_height="121dp"
-        android:src="@drawable/logo1" />
-</LinearLayout>
+        android:layout_height="112dp"
+        android:layout_centerInParent="true"
+        android:foregroundGravity="center"
+        app:srcCompat="@drawable/logo1" />
+
+    <!-- Abstract Image Bottom Right -->
+    <View
+        android:id="@+id/view4"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="4dp"
+        android:background="@drawable/bubble"
+        android:rotation="-90" />
+
+</RelativeLayout>

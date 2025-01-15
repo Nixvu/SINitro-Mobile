@@ -331,7 +331,7 @@
                 android:layout_weight="1"
                 android:text="Shift"
                 android:padding="8dp"
-                android:background="@drawable/headertable"
+                android:background="@drawable/hdtable"
                 android:textColor="#272B3C"
                 android:textStyle="bold" />
 
@@ -341,7 +341,7 @@
                 android:layout_weight="1"
                 android:text="Tanggal"
                 android:padding="8dp"
-                android:background="@drawable/headertable"
+                android:background="@drawable/hdtable"
                 android:textColor="#272B3C"
                 android:textStyle="bold" />
 
@@ -351,7 +351,7 @@
                 android:layout_weight="1"
                 android:text="QTY"
                 android:padding="8dp"
-                android:background="@drawable/headertable"
+                android:background="@drawable/hdtable"
                 android:textColor="#272B3C"
                 android:textStyle="bold" />
 
@@ -361,7 +361,7 @@
                 android:layout_weight="1"
                 android:text="Biaya"
                 android:padding="8dp"
-                android:background="@drawable/headertable"
+                android:background="@drawable/hdtable"
                 android:textColor="#272B3C"
                 android:textStyle="bold" />
 
@@ -371,7 +371,7 @@
                 android:layout_weight="1"
                 android:text="Kendaraan"
                 android:padding="8dp"
-                android:background="@drawable/headertable"
+                android:background="@drawable/hdtable"
                 android:textColor="#272B3C"
                 android:textStyle="bold" />
         </TableRow>

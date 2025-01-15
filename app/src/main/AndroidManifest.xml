@@ -37,21 +37,25 @@
             android:name=".MainActivity"
             android:exported="true" />
 
-        <!-- Login -->
+        <activity android:name=".AdminDashboardActivity">
+
+        </activity>
+
+        <activity android:name=".ListPetugasActivity">
+
+        </activity>
+
         <activity android:name=".LoginActivity">
 
         </activity>
 
-        <!-- RegisterActivity -->
-        <activity android:name=".RegisterActivity">
+        <activity android:name=".PetugasDashboardActivity">
 
         </activity>
 
-        <activity android:name=".AdminDashboardActivity" />
+        <activity android:name=".RegisterActivity">
 
-        <!-- Transaksi Form -->
-        <activity android:name=".TransaksiFormActivity"/>
-
+        </activity>
 
     </application>
 

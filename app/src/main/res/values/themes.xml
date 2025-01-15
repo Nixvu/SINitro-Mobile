@@ -1,8 +1,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.Sinitro" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Mendefinisikan warna utama di tema -->
+        <item name="colorPrimary">#2466F5</item> <!-- Warna biru yang diinginkan -->
+        <item name="colorOnPrimary">@android:color/white</item> <!-- Warna teks tombol -->
     </style>
 
     <style name="Theme.Sinitro" parent="Base.Theme.Sinitro" />

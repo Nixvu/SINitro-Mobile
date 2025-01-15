@@ -21,11 +21,5 @@ public class PetugasDashboardActivity extends AppCompatActivity {
         motorCount = findViewById(R.id.motor_count);
         carCount = findViewById(R.id.car_count);
 
-        // Set sample data
-        userName.setText("Halo, Febriana");
-        userRole.setText("Petugas Shift 1");
-        income.setText("Rp 10.260.000,-");
-        motorCount.setText("2908");
-        carCount.setText("1290");
     }
 }
