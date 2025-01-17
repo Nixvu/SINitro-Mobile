@@ -1,7 +1,7 @@
 
 ## Tentang  Projek
 
-SINitro (Sistem Informasi Nitrogen) adalah proyek mobile sederhana yang dibangun menggunakan ide android studio. Proyek ini dirancang untuk mencatat transaksi pengisian angin nitrogen. SINitro dikembangkan sebagai tugas akhir mata kuliah Pemograman Aplikasi Bergerak yang dibuat oleh Febriana dengan NIM 20220910055.
+SINitro (Sistem Informasi Nitrogen) adalah proyek mobile sederhana yang dibangun menggunakan ide android studio. Proyek ini dirancang untuk mencatat transaksi pengisian angin nitrogen. SINitro dikembangkan sebagai tugas akhir mata kuliah Pemograman Aplikasi Bergerak yang dibuat oleh Febriana dengan NIM 20220910055 dari Kelas SINFC01-2022.
 
 ## Requitments
 Pastikan Anda memiliki hal-hal berikut yang telah diinstal di sistem Anda sebelum memulai:
