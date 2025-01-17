@@ -4,42 +4,61 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;  // Pastikan Anda mengimpor Log
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private static final int SPLASH_TIME_OUT = 3000; // waktu splash screen (dalam milidetik)
-    private static final String PREF_NAME = "onboarding_pref";
-    private static final String KEY_FIRST_TIME = "is_first_time";
+    private static final int SPLASH_TIME_OUT = 3000; // splash screen duration (in milliseconds)
+    private static final String PREF_NAME = "user_pref";
+    private static final String KEY_IS_LOGGED_IN = "is_logged_in";
+    private static final String KEY_USER_ROLE = "user_role";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash); // Ganti dengan layout splash.xml Anda
+        setContentView(R.layout.activity_splash);
 
-        // Menunggu selama SPLASH_TIME_OUT, lalu beralih ke halaman yang sesuai
+        // Wait for SPLASH_TIME_OUT, then navigate based on login status and role
         new Handler().postDelayed(() -> {
-            boolean isFirstTime = isFirstTimeLaunch();  // Mendapatkan nilai dari fungsi
-            Log.d("SplashActivity", "isFirstTimeLaunch: " + isFirstTime); // Menambahkan log yang benar
-
-            if (isFirstTime) {
-                // Tampilkan onboarding jika pertama kali
-                Intent intent = new Intent(SplashActivity.this, OnboardingActivity.class);
-                startActivity(intent);
+            if (isUserLoggedIn()) {
+                String role = getUserRole();
+                if ("admin".equals(role)) {
+                    navigateToAdminDashboard();
+                } else if ("petugas".equals(role)) {
+                    navigateToPetugasDashboard();
+                } else {
+                    navigateToLogin();
+                }
             } else {
-                // Arahkan ke login jika sudah selesai onboarding
-                Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
-                startActivity(intent);
+                navigateToLogin();
             }
-            finish(); // Menutup SplashActivity
+            finish(); // Close SplashActivity
         }, SPLASH_TIME_OUT);
     }
 
-    // Memeriksa apakah ini pertama kali aplikasi diluncurkan
-    private boolean isFirstTimeLaunch() {
+    private boolean isUserLoggedIn() {
         SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
-        return prefs.getBoolean(KEY_FIRST_TIME, true); // Mengembalikan nilai boolean
+        return prefs.getBoolean(KEY_IS_LOGGED_IN, false);
+    }
+
+    private String getUserRole() {
+        SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        return prefs.getString(KEY_USER_ROLE, "");
+    }
+
+    private void navigateToAdminDashboard() {
+        Intent intent = new Intent(SplashActivity.this, AdminDashboardActivity.class);
+        startActivity(intent);
+    }
+
+    private void navigateToPetugasDashboard() {
+        Intent intent = new Intent(SplashActivity.this, PetugasDashboardActivity.class);
+        startActivity(intent);
+    }
+
+    private void navigateToLogin() {
+        Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+        startActivity(intent);
     }
 }

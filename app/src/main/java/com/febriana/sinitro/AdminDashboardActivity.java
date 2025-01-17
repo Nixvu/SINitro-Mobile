@@ -1,30 +1,22 @@
 package com.febriana.sinitro;
 
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.content.DialogInterface;
-import android.text.TextUtils;
-import android.view.Gravity;
-import android.os.Bundle;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
+import android.view.Gravity;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,20 +24,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class AdminDashboardActivity extends AppCompatActivity {
 
-    private Button registerPetugasButton;
+    private TextView userNameTextView, userRoleTextView, incomeTextView, motorCountTextView, carCountTextView, staffCountTextView;
     private TableLayout tableLayout;
     private DatabaseReference mDatabase;
-    private Map<String, Integer> servicePrices = new HashMap<>();
-    private List<String> serviceTypes;
-    private TextView userNameTextView, userRoleTextView, incomeTextView, motorCountTextView, carCountTextView, staffCountTextView;
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +42,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
         // Initialize Firebase database reference
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        // Get current user session
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
         // Initialize UI components
         userNameTextView = findViewById(R.id.user_name);
         userRoleTextView = findViewById(R.id.user_role);
@@ -62,27 +52,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         motorCountTextView = findViewById(R.id.motor_total);
         carCountTextView = findViewById(R.id.car_total);
         staffCountTextView = findViewById(R.id.staff_count);
-
         tableLayout = findViewById(R.id.table_layout);
-
-        // Initialize service types and prices
-        serviceTypes = new ArrayList<>();
-        serviceTypes.add("Isi Tambah");
-        serviceTypes.add("Isi Awal");
-        serviceTypes.add("Tambal Ban");
-
-        servicePrices.put("Motor Isi Tambah", 3000);
-        servicePrices.put("Motor Isi Awal", 5000);
-        servicePrices.put("Motor Tambal Ban", 8000);
-        servicePrices.put("Mobil Isi Tambah", 5000);
-        servicePrices.put("Mobil Isi Awal", 7000);
-        servicePrices.put("Mobil Tambal Ban", 10000);
-
-        // Inisialisasi button lainnya
-        Button buttonBuatTransaksi = findViewById(R.id.button_buattransaksi);
-        buttonBuatTransaksi.setOnClickListener(v -> {
-            showTransactionForm(null);  // null untuk transaksi baru
-        });
 
         // Menambahkan kode untuk tombol "Petugas"
         Button buttonPetugas = findViewById(R.id.button_petugas);
@@ -92,159 +62,73 @@ public class AdminDashboardActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Fetch admin info and transaction data
+        // Fetch admin info, transaction data, and petugas count
         fetchAdminInfo();
+        fetchTransactionData();
+        fetchPetugasCount();
+    }
+
+    protected void onResume() {
+        super.onResume();
+        fetchPetugasCount();
         fetchTransactionData();
     }
 
-    private void showTransactionForm(String transaksiId) {
-        LayoutInflater inflater = LayoutInflater.from(this);
-        View dialogView = inflater.inflate(R.layout.dialog_form_transaksi, null);
-
-        // Initialize Views
-        EditText etPlateNumber = dialogView.findViewById(R.id.etPlateNumber);
-        EditText etQuantity = dialogView.findViewById(R.id.etQuantity);
-        EditText etDate = dialogView.findViewById(R.id.etDate);
-        Spinner spinnerServiceType = dialogView.findViewById(R.id.spinnerServiceType);
-        RadioGroup radioGroupVehicleType = dialogView.findViewById(R.id.radioGroupVehicleType);
-        TextView tvPrice = dialogView.findViewById(R.id.tvPrice);
-        Button btnSubmit = dialogView.findViewById(R.id.btnSubmit);
-
-        // Initialize ArrayAdapter for Spinner
-        ArrayAdapter<String> serviceAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, serviceTypes);
-        serviceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerServiceType.setAdapter(serviceAdapter);
-
-        // Set up date picker
-        etDate.setOnClickListener(v -> {
-            Calendar calendar = Calendar.getInstance();
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH);
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-            DatePickerDialog datePickerDialog = new DatePickerDialog(
-                    AdminDashboardActivity.this,
-                    (view, year1, monthOfYear, dayOfMonth) -> {
-                        String formattedDate = String.format("%02d-%02d-%04d", dayOfMonth, monthOfYear + 1, year1);
-                        etDate.setText(formattedDate);
-                    },
-                    year, month, day
-            );
-            datePickerDialog.show();
-        });
-
-        // Build and show the dialog
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setView(dialogView)
-                .create();
-
-        // Set up submit button
-        btnSubmit.setOnClickListener(v -> {
-            String plateNumber = etPlateNumber.getText().toString();
-
-            // Cek apakah ada RadioButton yang dipilih
-            int selectedVehicleId = radioGroupVehicleType.getCheckedRadioButtonId();
-            if (selectedVehicleId == -1) {
-                Toast.makeText(AdminDashboardActivity.this, "Jenis kendaraan harus dipilih", Toast.LENGTH_SHORT).show();
-                return; // Jika tidak ada yang dipilih, hentikan eksekusi lebih lanjut
-            }
-
-            // Ambil teks dari RadioButton yang dipilih
-            RadioButton selectedVehicleType = dialogView.findViewById(selectedVehicleId);
-            String vehicleType = selectedVehicleType != null ? selectedVehicleType.getText().toString() : "";
-
-            String serviceType = spinnerServiceType.getSelectedItem().toString();
-            String quantityStr = etQuantity.getText().toString();
-            String date = etDate.getText().toString();
-
-            if (validateInputs(plateNumber, quantityStr, date)) {
-                processTransaction(plateNumber, vehicleType, serviceType, quantityStr, date, tvPrice, dialog);
-            }
-        });
-
-        dialog.show();
-    }
-
-    private void processTransaction(String plateNumber, String vehicleType, String serviceType, String quantityStr, String date, TextView tvPrice, AlertDialog dialog) {
-        int quantity;
-        try {
-            quantity = Integer.parseInt(quantityStr);
-        } catch (NumberFormatException e) {
-            Toast.makeText(this, "Jumlah harus berupa angka.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String serviceKey = vehicleType + " " + serviceType;
-        Integer pricePerUnit = servicePrices.get(serviceKey);
-
-        if (pricePerUnit == null) {
-            Toast.makeText(this, "Layanan tidak ditemukan untuk kendaraan ini.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        int totalPrice = pricePerUnit * quantity;
-        String formattedPrice = NumberFormat.getInstance().format(totalPrice);
-        tvPrice.setText("Rp " + formattedPrice);
-
-        // Create the transaction object
-        Transaksi transaction = new Transaksi(vehicleType, date, String.valueOf(quantity), serviceType, plateNumber, "Rp " + formattedPrice, "Shift Pagi");
-
-        // Save the transaction to Firebase
-        mDatabase.child("transaksi").push().setValue(transaction)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Transaksi berhasil untuk kendaraan: " + transaction.getKendaraan(), Toast.LENGTH_SHORT).show();
-                    dialog.dismiss(); // Close the dialog after successful transaction
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Terjadi kesalahan saat menyimpan transaksi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-    }
-
-    private boolean validateInputs(String plateNumber, String quantityStr, String date) {
-        if (TextUtils.isEmpty(plateNumber)) {
-            Toast.makeText(this, "Nomor plat kendaraan harus diisi", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if (TextUtils.isEmpty(quantityStr)) {
-            Toast.makeText(this, "Jumlah layanan harus diisi", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if (TextUtils.isEmpty(date)) {
-            Toast.makeText(this, "Tanggal harus diisi", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        return true;
-    }
-
+    // Existing method to fetch admin info
     private void fetchAdminInfo() {
-        mDatabase.child("adminData").child("adminInfo").addValueEventListener(new ValueEventListener() {
+        // Check if the current user is authenticated
+        if (currentUser != null) {
+            String userId = currentUser.getUid();  // Get the current user's ID
+
+            // Fetch the admin data from the 'users' node based on user session
+            mDatabase.child("users").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        String userName = dataSnapshot.child("name").getValue(String.class);
+                        String userRole = dataSnapshot.child("role").getValue(String.class);  // Update key name to 'role'
+
+                        // Display the admin name and role on the UI
+                        if (userName != null) {
+                            userNameTextView.setText("Hi, " + userName);
+                        }
+                        if (userRole != null) {
+                            userRoleTextView.setText(userRole);
+                        }
+                    } else {
+                        Toast.makeText(AdminDashboardActivity.this, "User data not found!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e("Firebase", "Error fetching admin info: " + databaseError.getMessage());
+                }
+            });
+        } else {
+            Toast.makeText(AdminDashboardActivity.this, "User not logged in!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // New method to fetch the count of petugas
+    private void fetchPetugasCount() {
+        mDatabase.child("users").orderByChild("role").equalTo("petugas").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    String userName = dataSnapshot.child("userName").getValue(String.class);
-                    String userRole = dataSnapshot.child("userRole").getValue(String.class);
-                    String income = dataSnapshot.child("income").getValue(String.class);
-                    String motorCount = dataSnapshot.child("motorCount").getValue(String.class);
-                    String carCount = dataSnapshot.child("carCount").getValue(String.class);
-                    String staffCount = dataSnapshot.child("staffCount").getValue(String.class);
-
-                    // Menampilkan data admin di UI
-                    if (userNameTextView != null) userNameTextView.setText("Hi, " + userName);
-                    if (userRoleTextView != null) userRoleTextView.setText(userRole);
-                    if (incomeTextView != null) incomeTextView.setText(income);
-                    if (motorCountTextView != null) motorCountTextView.setText(motorCount);
-                    if (carCountTextView != null) carCountTextView.setText(carCount);
-                    if (staffCountTextView != null) staffCountTextView.setText(staffCount);
-                }
+                // Count the number of petugas (users with role 'petugas')
+                int petugasCount = (int) dataSnapshot.getChildrenCount();
+                // Update the staff count UI
+                staffCountTextView.setText(String.valueOf(petugasCount));
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.e("Firebase", "Error: " + databaseError.getMessage());
+                Log.e("Firebase", "Error fetching petugas count: " + databaseError.getMessage());
             }
         });
     }
 
+    // Existing method to fetch transaction data
     private void fetchTransactionData() {
         mDatabase.child("transaksi").addValueEventListener(new ValueEventListener() {
             @Override
@@ -253,63 +137,64 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 int carCount = 0;
                 double totalIncome = 0;
 
-                // Bersihkan TableLayout sebelum menambahkan data baru
+                // Clear TableLayout before adding new data
                 tableLayout.removeAllViews();
 
-                // Menambahkan header tabel
+                // Add table header row
                 TableRow headerRow = new TableRow(AdminDashboardActivity.this);
-                TextView tvHeader1 = new TextView(AdminDashboardActivity.this);
-                tvHeader1.setText("Nomor Plat");
-                tvHeader1.setGravity(Gravity.CENTER);
-                headerRow.addView(tvHeader1);
+                String[] headers = {"No", "Shift", "Qty", "Biaya", "Kendaraan", "Tanggal"};
+                for (String header : headers) {
+                    TextView textView = new TextView(AdminDashboardActivity.this);
+                    textView.setText(header);
+                    textView.setGravity(Gravity.CENTER);
+                    textView.setPadding(8, 8, 8, 8);
+                    textView.setTextColor(Color.parseColor("#272B3C"));
+                    textView.setTypeface(null, Typeface.BOLD);
+                    textView.setBackgroundResource(R.drawable.hdtable);
 
-                TextView tvHeader2 = new TextView(AdminDashboardActivity.this);
-                tvHeader2.setText("Jenis Layanan");
-                tvHeader2.setGravity(Gravity.CENTER);
-                headerRow.addView(tvHeader2);
-
-                TextView tvHeader3 = new TextView(AdminDashboardActivity.this);
-                tvHeader3.setText("Harga");
-                tvHeader3.setGravity(Gravity.CENTER);
-                headerRow.addView(tvHeader3);
-
+                    TableRow.LayoutParams params = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f);
+                    textView.setLayoutParams(params);
+                    headerRow.addView(textView);
+                }
                 tableLayout.addView(headerRow);
 
-                // Menampilkan data transaksi dalam TableLayout dan menghitung data untuk Card
+                // Display transaction data
+                int index = 1;
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Transaksi transaksi = snapshot.getValue(Transaksi.class);
                     if (transaksi != null) {
                         TableRow tableRow = new TableRow(AdminDashboardActivity.this);
+                        String[] rowData = {
+                                String.valueOf(index++),
+                                transaksi.getShift() != null ? transaksi.getShift() : "-",
+                                transaksi.getKuantitas(),
+                                transaksi.getHarga(),
+                                transaksi.getKendaraan(),
+                                transaksi.getTanggal()
+                        };
 
-                        // Nomor plat kendaraan
-                        TextView tvPlateNumber = new TextView(AdminDashboardActivity.this);
-                        tvPlateNumber.setText(transaksi.getNomorPlat());
-                        tvPlateNumber.setGravity(Gravity.CENTER);
-                        tableRow.addView(tvPlateNumber);
+                        for (String cellData : rowData) {
+                            TextView textView = new TextView(AdminDashboardActivity.this);
+                            textView.setText(cellData);
+                            textView.setGravity(Gravity.CENTER);
+                            textView.setPadding(8, 8, 8, 8);
+                            textView.setTextColor(Color.BLACK);
 
-                        // Jenis layanan
-                        TextView tvServiceType = new TextView(AdminDashboardActivity.this);
-                        tvServiceType.setText(transaksi.getJenisLayanan());
-                        tvServiceType.setGravity(Gravity.CENTER);
-                        tableRow.addView(tvServiceType);
+                            TableRow.LayoutParams params = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f);
+                            textView.setLayoutParams(params);
+                            tableRow.addView(textView);
+                        }
 
-                        // Harga
-                        TextView tvPrice = new TextView(AdminDashboardActivity.this);
-                        tvPrice.setText(transaksi.getHarga());
-                        tvPrice.setGravity(Gravity.CENTER);
-                        tableRow.addView(tvPrice);
-
-                        // Menambahkan baris ke dalam TableLayout
                         tableLayout.addView(tableRow);
 
-                        // Hitung jumlah motor dan mobil
-                        if (transaksi.getKendaraan().equalsIgnoreCase("Motor")) {
+                        // Count motor and car transactions
+                        if ("Motor".equalsIgnoreCase(transaksi.getKendaraan())) {
                             motorCount++;
-                        } else if (transaksi.getKendaraan().equalsIgnoreCase("Mobil")) {
+                        } else if ("Mobil".equalsIgnoreCase(transaksi.getKendaraan())) {
                             carCount++;
                         }
 
-                        // Hitung total pemasukan (hapus simbol "Rp " dan tanda koma, kemudian parsing angka)
+                        // Calculate total income
                         try {
                             String hargaStr = transaksi.getHarga().replace("Rp ", "").replace(",", "");
                             totalIncome += Double.parseDouble(hargaStr);
@@ -319,7 +204,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
                     }
                 }
 
-                // Update UI dengan data yang dihitung untuk Card
                 motorCountTextView.setText(String.valueOf(motorCount));
                 carCountTextView.setText(String.valueOf(carCount));
                 incomeTextView.setText("Rp " + NumberFormat.getInstance().format(totalIncome));

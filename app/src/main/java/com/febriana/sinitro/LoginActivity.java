@@ -1,6 +1,7 @@
 package com.febriana.sinitro;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -26,45 +27,43 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseDatabase database;
 
+    private static final String PREF_NAME = "user_pref";
+    private static final String KEY_IS_LOGGED_IN = "is_logged_in";
+    private static final String KEY_USER_ROLE = "user_role";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login); // Pastikan layout file bernama 'login.xml'
+        setContentView(R.layout.login);
 
-        // Initialize Firebase Auth dan Realtime Database
+        // Initialize Firebase Auth and Realtime Database
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
 
-        // Menghubungkan komponen UI
+        // Connect UI components
         emailEditText = findViewById(R.id.email);
         passwordEditText = findViewById(R.id.password);
         loginButton = findViewById(R.id.login_button);
         createAccountTextView = findViewById(R.id.create_account);
         forgotPasswordTextView = findViewById(R.id.forgot_password);
 
-        // Cek jika sudah login
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null) {
-            checkUserRole(user.getUid());
-        }
-
-        // Fungsi login ketika tombol ditekan
+        // Login button click listener
         loginButton.setOnClickListener(v -> {
             String email = emailEditText.getText().toString().trim();
             String password = passwordEditText.getText().toString().trim();
 
             if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(LoginActivity.this, "Email atau Password tidak boleh kosong", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Email or Password cannot be empty", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             loginUser(email, password);
         });
 
-        // Fungsi untuk membuat akun baru
+        // Create account listener
         createAccountTextView.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, RegisterActivity.class)));
 
-        // Fungsi reset password
+        // Forgot password listener
         forgotPasswordTextView.setOnClickListener(v -> resetPassword());
     }
 
@@ -77,13 +76,12 @@ public class LoginActivity extends AppCompatActivity {
                             checkUserRole(user.getUid());
                         }
                     } else {
-                        Toast.makeText(LoginActivity.this, "Login gagal: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Login failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     private void checkUserRole(String uid) {
-        // Akses Realtime Database untuk mengambil role pengguna
         DatabaseReference usersRef = database.getReference("users").child(uid);
 
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -91,23 +89,39 @@ public class LoginActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     String role = dataSnapshot.child("role").getValue(String.class);
+                    saveUserSession(role);  // Save user role and login status in SharedPreferences
                     if ("admin".equals(role)) {
                         navigateToAdminDashboard();
                     } else if ("petugas".equals(role)) {
                         navigateToPetugasDashboard();
                     } else {
-                        Toast.makeText(LoginActivity.this, "Role tidak dikenal!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Unknown role!", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(LoginActivity.this, "Dokumen pengguna tidak ditemukan!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "User document not found!", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(LoginActivity.this, "Gagal mengambil data pengguna: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Failed to fetch user data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void saveUserSession(String role) {
+        SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(KEY_IS_LOGGED_IN, true);  // Mark user as logged in
+        editor.putString(KEY_USER_ROLE, role);  // Save the user's role
+        editor.apply();
+    }
+
+    private void clearUserSession() {
+        SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.clear();  // Clears the entire session (login status and role)
+        editor.apply();
     }
 
     private void navigateToAdminDashboard() {
@@ -123,16 +137,16 @@ public class LoginActivity extends AppCompatActivity {
     private void resetPassword() {
         String email = emailEditText.getText().toString().trim();
         if (email.isEmpty()) {
-            Toast.makeText(LoginActivity.this, "Masukkan email terlebih dahulu", Toast.LENGTH_SHORT).show();
+            Toast.makeText(LoginActivity.this, "Please enter email", Toast.LENGTH_SHORT).show();
             return;
         }
 
         mAuth.sendPasswordResetEmail(email)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(LoginActivity.this, "Instruksi reset password telah dikirim ke email", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Password reset instructions sent to email", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(LoginActivity.this, "Gagal mengirim email reset password", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Failed to send password reset email", Toast.LENGTH_SHORT).show();
                     }
                 });
     }

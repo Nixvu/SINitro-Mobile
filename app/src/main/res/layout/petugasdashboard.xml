@@ -7,6 +7,7 @@
     tools:context=".AdminDashboardActivity">
 
     <!-- Header -->
+
     <View
         android:id="@+id/header"
         android:layout_width="match_parent"
@@ -34,7 +35,7 @@
             android:layout_marginEnd="20dp"
             android:contentDescription="User Image"
             android:scaleType="centerCrop"
-            android:src="@drawable/profile" />
+            android:src="@drawable/profile2" />
 
         <!-- User Name -->
         <TextView
@@ -51,18 +52,18 @@
 
         <!-- User Role -->
         <TextView
-            android:id="@+id/user_role"
+            android:id="@+id/user_shift"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/user_name"
             android:layout_alignStart="@id/user_name"
             android:layout_marginTop="4dp"
-            android:text="Super Admin"
-            android:textColor="@android:color/darker_gray" />
+            android:text="Petugas Shift 1"
+            android:textColor="@android:color/white" />
     </RelativeLayout>
 
     <!-- Cards Container -->
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/income_card"
         android:layout_width="match_parent"
         android:layout_height="90dp"
@@ -75,32 +76,37 @@
             android:id="@+id/imageView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
-            android:src="@drawable/uang" />
+            android:src="@drawable/uang"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <TextView
-            android:id="@+id/income"
+            android:id="@+id/income_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
-            android:layout_toEndOf="@id/imageView2"
             android:fontFamily="sans-serif-black"
             android:text="Rp 10.260.000,-"
             android:textColor="#272B3C"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imageView2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.31" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/income"
             android:layout_marginStart="16dp"
             android:layout_marginTop="4dp"
-            android:layout_toEndOf="@id/imageView2"
             android:text="Pendapatan"
-            android:textColor="#272B3C" />
-    </RelativeLayout>
+            android:textColor="#272B3C"
+            app:layout_constraintStart_toEndOf="@id/imageView2"
+            app:layout_constraintTop_toBottomOf="@id/income_count" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <LinearLayout
         android:id="@+id/cards_container"
@@ -113,7 +119,7 @@
         android:orientation="horizontal">
 
         <!-- Motor Card -->
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/motor_card"
             android:layout_width="0dp"
             android:layout_height="75dp"
@@ -121,115 +127,94 @@
             android:layout_weight="1"
             android:background="@drawable/card">
 
+            <!-- Gambar Motor -->
             <ImageView
                 android:id="@+id/imageView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="10dp"
-                android:src="@drawable/motor" />
+                android:layout_marginStart="20dp"
+                android:contentDescription="Icon Motor"
+                android:src="@drawable/motor"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
+            <!-- Jumlah Motor -->
             <TextView
-                android:id="@+id/motor_count"
+                android:id="@+id/motor_total"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="10dp"
-                android:layout_toEndOf="@id/imageView3"
+                android:layout_marginStart="20dp"
                 android:fontFamily="sans-serif-black"
                 android:text="250"
                 android:textColor="#272B3C"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                app:layout_constraintStart_toEndOf="@id/imageView3"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.35" />
 
+            <!-- Label Motor -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/motor_count"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="4dp"
-                android:layout_toEndOf="@id/imageView3"
+                android:layout_marginStart="20dp"
                 android:text="Motor"
-                android:textColor="#272B3C" />
-        </RelativeLayout>
+                android:textColor="#272B3C"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/imageView3"
+                app:layout_constraintTop_toBottomOf="@+id/motor_total"
+                app:layout_constraintVertical_bias="0.0" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Car Card -->
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/car_card"
             android:layout_width="0dp"
             android:layout_height="75dp"
             android:layout_weight="1"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="0dp"
             android:background="@drawable/card">
 
+            <!-- Gambar Mobil -->
             <ImageView
                 android:id="@+id/imageView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="10dp"
-                android:src="@drawable/mobil" />
+                android:layout_marginStart="20dp"
+                android:contentDescription="Icon Mobil"
+                android:src="@drawable/mobil"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
+            <!-- Jumlah Mobil -->
             <TextView
-                android:id="@+id/car_count"
+                android:id="@+id/car_total"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toEndOf="@id/imageView4"
                 android:layout_marginStart="10dp"
+                android:fontFamily="sans-serif-black"
                 android:text="250"
                 android:textColor="#272B3C"
                 android:textSize="24sp"
-                android:fontFamily="sans-serif-black" />
+                app:layout_constraintStart_toEndOf="@id/imageView4"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.35" />
 
+            <!-- Label Motor -->
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/car_count"
-                android:layout_toEndOf="@id/imageView4"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="4dp"
+                android:layout_width="40dp"
+                android:layout_height="19dp"
+                android:layout_marginStart="12dp"
                 android:text="Mobil"
-                android:textColor="#272B3C" />
-        </RelativeLayout>
-
-        <!-- Staff Card -->
-        <RelativeLayout
-            android:id="@+id/staff"
-            android:layout_width="0dp"
-            android:layout_height="75dp"
-            android:layout_weight="1"
-            android:background="@drawable/card">
-
-            <ImageView
-                android:id="@+id/imageView5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="10dp"
-                android:src="@drawable/pp" />
-
-            <TextView
-                android:id="@+id/staff_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toEndOf="@id/imageView5"
-                android:layout_marginStart="10dp"
-                android:text="4"
                 android:textColor="#272B3C"
-                android:textSize="24sp"
-                android:fontFamily="sans-serif-black" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/staff_count"
-                android:layout_toEndOf="@id/imageView5"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="2dp"
-                android:text="Petugas"
-                android:textColor="#272B3C" />
-        </RelativeLayout>
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/imageView4"
+                app:layout_constraintTop_toBottomOf="@+id/car_total"
+                app:layout_constraintVertical_bias="0.0" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 
     <TextView
@@ -238,53 +223,52 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="350dp"
-        android:text="Kelola Data"
+        android:text="Akses Cepat"
         android:textColor="#272B3C" />
 
     <LinearLayout
         android:id="@+id/cards_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="114dp"
         android:layout_below="@id/cards_container"
         android:layout_marginStart="20dp"
         android:layout_marginTop="60dp"
         android:layout_marginEnd="20dp"
+        android:gravity="center"
         android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/button_petugas"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="16dp"
-            android:background="@drawable/button_background"
-            android:drawableTop="@drawable/pp1"
-            android:gravity="center"
-            android:text="Petugas"
-            android:textColor="@android:color/white" />
-
-        <Button
-            android:id="@+id/button_gerai"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="16dp"
-            android:background="@drawable/button_background"
-            android:drawableTop="@drawable/pp1"
-            android:gravity="center"
-            android:text="Gerai"
-            android:textColor="@android:color/white" />
 
         <Button
             android:id="@+id/button_absensi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="16dp"
             android:background="@drawable/button_background"
-            android:drawableTop="@drawable/pp1"
+            android:drawableTop="@drawable/absen"
             android:gravity="center"
             android:text="Absensi"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/button_buattransaksi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/button_background"
+            android:drawableTop="@drawable/transasksi"
+            android:gravity="center"
+            android:text="Transaksi"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/button_daftartransaksi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/button_background"
+            android:drawableTop="@drawable/riwayat"
+            android:text="Riwayat"
             android:textColor="@android:color/white" />
 
         <Button
@@ -293,9 +277,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="16dp"
+            android:layout_marginEnd="0dp"
             android:background="@drawable/button_background"
-            android:drawableTop="@drawable/pp1"
-            android:gravity="center"
+            android:drawableTop="@drawable/report"
             android:text="Laporan"
             android:textColor="@android:color/white" />
     </LinearLayout>
@@ -309,9 +293,18 @@
         android:text="Riwayat"
         android:textColor="#272B3C" />
 
-    <!-- Header Row -->
+    <TextView
+        android:id="@+id/text4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="510dp"
+        android:text="Rincian"
+        android:textColor="#2466F5" />
+
     <TableLayout
-        android:id="@+id/table"
+        android:id="@+id/table_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -329,7 +322,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Shift"
+                android:text="No"
                 android:padding="8dp"
                 android:background="@drawable/hdtable"
                 android:textColor="#272B3C"
@@ -339,7 +332,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Tanggal"
+                android:text="Nopol"
                 android:padding="8dp"
                 android:background="@drawable/hdtable"
                 android:textColor="#272B3C"
@@ -370,6 +363,26 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Kendaraan"
+                android:padding="8dp"
+                android:background="@drawable/hdtable"
+                android:textColor="#272B3C"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Tanggal"
+                android:padding="8dp"
+                android:background="@drawable/hdtable"
+                android:textColor="#272B3C"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Aksi"
                 android:padding="8dp"
                 android:background="@drawable/hdtable"
                 android:textColor="#272B3C"
